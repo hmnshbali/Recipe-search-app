@@ -1,15 +1,28 @@
 import { useState, useEffect } from "react";
+import type { AppDispatch } from "../store/store"; // Adjust path as needed
 import { useDispatch, useSelector } from "react-redux";
 import { fetchRecipes } from "../store/recipeSlice";
 import NotFound from "./NotFound";
 
-const RecipeSearch = () => {
-  const dispatch = useDispatch();
-  const { recipes = [], isLoading, error } = useSelector(
-    (state) => state.recipes || {}
-  );
+interface Recipe {
+  id: string | number;
+  name: string;
+  image?: string;
+  ingredients: string[];
+  cookTimeMinutes?: number;
+  instructions?: string[] | string;
+}
 
-  const [selectedRecipe, setSelectedRecipe] = useState(null); // stores clicked recipe
+interface RecipesState {
+  recipes?: Recipe[];
+  isLoading: boolean;
+  error?: string;
+}
+
+const RecipeSearch = () => {
+const dispatch = useDispatch<AppDispatch>();
+  const { recipes = [], isLoading, error } = useSelector((state: { recipes: RecipesState }) => state.recipes || {});
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
   useEffect(() => {
     dispatch(fetchRecipes(""));
@@ -28,7 +41,7 @@ const RecipeSearch = () => {
       {isLoading && (
         <div className="flex justify-center items-center h-screen w-full">
           <div className="flex justify-center items-end h-[100px] w-[300px]">
-             <div className="bg-[#3498db] rounded-[5px] w-[20px] h-[10px] mx-[5px] animate-[loading-wave-animation_1s_ease-in-out_infinite]"></div>
+            <div className="bg-[#3498db] rounded-[5px] w-[20px] h-[10px] mx-[5px] animate-[loading-wave-animation_1s_ease-in-out_infinite]"></div>
             <div className="bg-[#3498db] rounded-[5px] w-[20px] h-[10px] mx-[5px] animate-[loading-wave-animation_1s_ease-in-out_infinite] animate-delay-[0.1s]"></div>
             <div className="bg-[#3498db] rounded-[5px] w-[20px] h-[10px] mx-[5px] animate-[loading-wave-animation_1s_ease-in-out_infinite] animate-delay-[0.2s]"></div>
             <div className="bg-[#3498db] rounded-[5px] w-[20px] h-[10px] mx-[5px] animate-[loading-wave-animation_1s_ease-in-out_infinite] animate-delay-[0.3s]"></div>
@@ -38,7 +51,7 @@ const RecipeSearch = () => {
 
       {!isLoading && error && <p style={{ color: "red" }}>{error}</p>}
 
-      {!isLoading && Array.isArray(recipes) && recipes.length >= 0 && (
+      {!isLoading && Array.isArray(recipes) && recipes.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 mx-5">
           {recipes.map((recipe) => (
             <div
@@ -58,25 +71,25 @@ const RecipeSearch = () => {
                 <h3 className="text-lg font-bold mb-1">{recipe.name}</h3>
                 <div className="flex items-center gap-4">
                   <p className="text-gray-600 mb-4">
-                    {recipe.ingredients.length} ingredients
+                    {recipe.ingredients?.length ?? 0} ingredients
                   </p>
                   <p className="text-gray-600 mb-4">
-                    {recipe.cookTimeMinutes} minutes
+                    {recipe.cookTimeMinutes ?? '-'} minutes
                   </p>
                 </div>
                 <button
-  onClick={() => setSelectedRecipe(recipe)}
-  className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 cursor-pointer"
->
-  Learn More
-</button>
+                  onClick={() => setSelectedRecipe(recipe)}
+                  className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 cursor-pointer"
+                >
+                  Learn More
+                </button>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      { (!Array.isArray(recipes) || recipes.length === 0) && (
+      {(!isLoading && (!Array.isArray(recipes) || recipes.length === 0)) && (
         <div className="flex justify-center items-center h-screen w-full">
           <NotFound />
         </div>
@@ -96,13 +109,15 @@ const RecipeSearch = () => {
               </button>
             </div>
             <div className="p-4">
-              <img
-                src={selectedRecipe.image}
-                alt={selectedRecipe.name}
-                className="w-full h-60 object-cover rounded"
-              />
+              {selectedRecipe.image && (
+                <img
+                  src={selectedRecipe.image}
+                  alt={selectedRecipe.name}
+                  className="w-full h-60 object-cover rounded"
+                />
+              )}
               <p className="mt-4 text-gray-600">
-                Ingredients: {selectedRecipe.ingredients.join(", ")}
+                Ingredients: {selectedRecipe.ingredients?.join(", ")}
               </p>
               {selectedRecipe.instructions && (
                 <div className="mt-4">

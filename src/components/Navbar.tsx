@@ -1,17 +1,20 @@
 import { useState } from 'react';
+import type { AppDispatch } from "../store/store"; // Adjust path as needed
+
 import { useDispatch } from 'react-redux';
 import { fetchRecipes } from '../store/recipeSlice';
 import '../App.css'
 import logo from '../assets/restaurant-service-abstract-logo-template-symbol-icon-free-vector.jpg'
 
 const Navbar = () => {
+const dispatch = useDispatch<AppDispatch>();
   const [query, setQuery] = useState('');
-  const dispatch = useDispatch();
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch(fetchRecipes(query));
   };
+  
 
   return (
     <>
@@ -72,5 +75,4 @@ const Navbar = () => {
     </>
   )
 }
-
 export default Navbar
