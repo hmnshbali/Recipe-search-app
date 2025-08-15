@@ -1,0 +1,1 @@
+Recipe search app where you can search recipe name and their instructions how to make it fully responsive for all screen sizes created using react typescript and use redux toolkit for state management
