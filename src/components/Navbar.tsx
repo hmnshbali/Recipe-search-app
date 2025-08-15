@@ -52,7 +52,7 @@ const dispatch = useDispatch<AppDispatch>();
         </svg>
     </button>
   </div>
-    <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-search">
+    <div className="items-center justify-between w-full md:flex md:w-auto md:order-1" id="navbar-search">
       <div className="relative mt-3 md:hidden">
         <form className="max-w-md mx-auto" onSubmit={handleSearch}>
           <label htmlFor="search-navbar-mobile" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
